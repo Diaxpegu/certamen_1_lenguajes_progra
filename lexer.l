@@ -19,6 +19,8 @@
 ":"             { return ':'; }
 "subrutina"     { return TOKEN_SUBRUTINA; }
 "usa"           {return TOKEN_USA;}
+"repetir"       {return TOKEN_REPETIR;}
+"veces"         {return TOKEN_VECES; }
 [0-9]+          { yylval.num = atoi(yytext); return TOKEN_NUMERO; }
 [a-zA-Z0-9_]+   { yylval.str = strdup(yytext); return TOKEN_ID; }
 "//".*          { ; }
