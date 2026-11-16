@@ -44,22 +44,25 @@ Durante el retroceso, aplica la regla de acarreo: cambia los `1` por `0` hasta e
 ```bash
 ./turing maquina.tm 1011
 ```
-**Resultado esperado:** La máquina procesará el acarreo en cadena y la cinta final mostrará `1100`.
+## 2. Generador unario con subrutinas (`maquina2.tm`)
 
-## 2. Generador Unario con Subrutinas (`maquina2.tm`)
+Esta máquina demuestra cómo se declara y se invoca una subrutina parametrizada. `escribir_unos(n)` recorre `n` celdas consecutivas desde la posición del cabezal. En cada celda, lee `0` o `1`, escribe `1` y avanza a la derecha.
 
-Esta máquina pone a prueba la **Fase 2 del certamen (Subrutinas parametrizadas)**. Contiene la invocación `escribir_unos(5);`, la cual es detectada por Bison en tiempo de compilación. El compilador en C hace un ciclo y genera **5 estados dinámicos en la memoria RAM**, enlazándolos al estado inicial y final de la máquina principal.
+La máquina principal hace la llamada dentro del bloque `transiciones`:
+
+```text
+q_inicio -> escribir_unos(3) -> q_final;
+```
+
+La llamada parte en `q_inicio`, usa `3` como valor del parámetro `n` y pasa a `q_final` después de la tercera escritura. Antes de ejecutar la máquina, Bison expande esta llamada en **dos estados intermedios y seis reglas de transición**. En cada paso hay una regla para leer `0` y otra para leer `1`. Durante la ejecución se aplica solo la que coincide con el símbolo bajo el cabezal.
 
 ### Comando de prueba
 
-Usamos `_` para iniciar con la cinta en blanco:
-
 ```bash
-./turing maquina2.tm _
+./turing maquina2.tm 010
 ```
-**Resultado esperado:** El cabezal avanzará por la cinta vacía escribiendo el número `1` cinco veces consecutivas, demostrando que los estados de la subrutina se expandieron correctamente.
 
-**Cinta final:** `11111`
+La máquina alcanza `q_final` en tres pasos y muestra `Cinta final: 111`. La entrada `010` permite probar ambas reglas de la plantilla. Si se usa `_` como entrada, la máquina se detiene en `q_inicio` porque la subrutina no tiene una regla para leer el símbolo blanco.
 
 ## 3. Inversor de Bits / Complemento a 1 (`maquina3.tm`)
 
