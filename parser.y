@@ -19,7 +19,7 @@ int total_alfabeto = 0;
 char estados[50][50];
 int total_estados = 0;
 
-// --- Estructuras para plantillas de subrutinas ---
+//  Estructuras para plantillas de subrutinas 
 typedef struct {
     char lee_simbolo;
     char escribe_simbolo;
@@ -130,7 +130,7 @@ static int expandir_subrutina(const char *nombre, const char *argumento, int can
         if (!registrar_estado(estado)) return 0;
     }
 
-    // 2. Generar las transiciones conectando estado_entrada -> [internos] -> estado_salida
+    //Generar las transiciones conectando estado_entrada -> [internos] -> estado_salida
     for (int i = 0; i < cantidad; i++) {
         char origen[50], siguiente_estado[50];
 
@@ -175,7 +175,7 @@ static int expandir_subrutina(const char *nombre, const char *argumento, int can
 
 %token TOKEN_MAQUINA TOKEN_TRANSICIONES TOKEN_DER TOKEN_IZQ TOKEN_QUIETO TOKEN_FLECHA
 %token TOKEN_ALFABETO TOKEN_ESTADOS TOKEN_INICIAL TOKEN_FINALES 
-%token TOKEN_SUBRUTINA TOKEN_USA
+%token TOKEN_SUBRUTINA
 %token <str> TOKEN_ID
 %token <num> TOKEN_NUMERO
 %token TOKEN_REPETIR TOKEN_VECES
@@ -194,8 +194,12 @@ lista_subrutinas:
     | lista_subrutinas declaracion_subrutina
     ;
 
+
 declaracion_subrutina:
-    TOKEN_SUBRUTINA TOKEN_ID '(' lista_params ')' '{' cuerpo_subrutina '}'
+
+    //TOKEN_SUBRUTINA como declaracion de la subrutina y TOKEN_ID como nombre de la subrutina
+    
+    TOKEN_SUBRUTINA TOKEN_ID '(' lista_params ')' '{' cuerpo_subrutina '}' //Subrutina con parametros
     {
         // Si hay bloque repetir, su variable debe coincidir con el parámetro declarado
         if (sub_temp.tiene_repetir) {
@@ -218,7 +222,9 @@ declaracion_subrutina:
         }
         memset(&sub_temp, 0, sizeof(SubrutinaDef));
     }
-    | TOKEN_SUBRUTINA TOKEN_ID '{' cuerpo_subrutina '}'
+
+    
+    | TOKEN_SUBRUTINA TOKEN_ID '{' cuerpo_subrutina '}' //Subrutina sin parametro
     {
         if (sub_temp.tiene_repetir) {
             fprintf(stderr, "Error: subrutina '%s' usa repetir(%s) pero no declara parametros.\n",
@@ -240,8 +246,7 @@ declaracion_subrutina:
     }
     ;
 
-cuerpo_subrutina:
-    /* vacio */
+cuerpo_subrutina: //Que debe ir dentro de la subrutina
     | bloque_transiciones
     | bloque_repetir
     ;
@@ -295,26 +300,7 @@ maquina_def:
 contenido_maquina:
     /* vacio */
     | contenido_maquina bloque_transiciones
-    | contenido_maquina invocacion_subrutina
-    ;
-
-invocacion_subrutina:
-    TOKEN_USA TOKEN_ID '(' lista_argumentos ')' ';'
-    {
-        if (!buscar_subrutina($2)) {
-            fprintf(stderr, "Error: subrutina '%s' no declarada.\n", $2);
-            YYERROR;
-        }
-        printf("Declaracion de uso validada: usa %s(...);\n", $2);
-    }
-    | TOKEN_USA TOKEN_ID ';'
-    {
-        if (!buscar_subrutina($2)) {
-            fprintf(stderr, "Error: subrutina '%s' no declarada.\n", $2);
-            YYERROR;
-        }
-        printf("Declaracion de uso validada: usa %s;\n", $2);
-    }
+    
     ;
 
 lista_argumentos:

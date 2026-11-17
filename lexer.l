@@ -18,7 +18,6 @@
 "QUIETO"        { return TOKEN_QUIETO; }
 ":"             { return ':'; }
 "subrutina"     { return TOKEN_SUBRUTINA; }
-"usa"           {return TOKEN_USA;}
 "repetir"       {return TOKEN_REPETIR;}
 "veces"         {return TOKEN_VECES; }
 [0-9]+          { yylval.num = atoi(yytext); return TOKEN_NUMERO; }
